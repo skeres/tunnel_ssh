@@ -1,0 +1,9 @@
+---
+
+#root public network
+__root_public_network: "172.18.1"
+
+#root private network
+__root_private_network: "172.19.2"
+
+

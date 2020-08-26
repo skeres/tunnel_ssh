@@ -1,0 +1,23 @@
+[servers_group]
+
+[servers_group:children]
+basic_group
+jump_group
+nginx_group
+
+
+[servers_group:vars]
+ansible_connection=ssh
+ansible_user=ugeek
+ansible_ssh_pass=ugeek
+
+
+[basic_group]
+basic ansible_host="{{ __root_public_network }}.10"
+
+[jump_group]
+jump ansible_host="{{ __root_private_network }}.12"
+
+[nginx_group]
+nginx ansible_host="{{ __root_private_network }}.14"
+

@@ -1,0 +1,13 @@
+---
+
+- hosts: localhost
+
+  roles:
+    - { role: role_container }
+
+
+    
+- hosts: nginx_group
+
+  roles:
+    - { role: role_nginx }

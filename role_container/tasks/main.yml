@@ -1,0 +1,76 @@
+---
+# tasks file for role_container
+#
+
+
+- name: Create a first public network with custom IPAM config
+  docker_network:
+    name: public_network
+    ipam_config:
+      - subnet: "{{ __root_public_network }}.0/24"
+        gateway: "{{ __root_public_network }}.254"
+        
+
+- name: Create a second private network with custom IPAM config
+  docker_network:
+    name: private_network
+    ipam_config:
+      - subnet: "{{ __root_private_network }}.0/24"
+        gateway: "{{ __root_private_network }}.254"
+        
+
+- name: Create a custom image from ubuntu with user=ugeek and minimum packages
+  docker_image:
+    name: i_custom_ubuntu
+    build:
+      path: ./role_container/build_01
+    source: build
+    force_absent: yes 
+
+
+- name: Create a container for a basic ubutnu server, based on custom image created above
+  docker_container:
+    name: c_basic_ubuntu
+    image: i_custom_ubuntu
+    detach: yes
+    interactive: yes
+    tty: yes
+    recreate: no
+    purge_networks: yes
+    networks:
+      - name: public_network
+        ipv4_address: "{{ __root_public_network }}.10"
+
+
+- name: Create a container for jump server, based on custom image created above
+  docker_container:
+    name: c_jump
+    image: i_custom_ubuntu
+    detach: yes
+    interactive: yes
+    tty: yes
+    recreate: no
+    purge_networks: yes
+    networks:
+      - name: public_network
+        ipv4_address: "{{ __root_public_network }}.11"
+      - name: private_network
+        ipv4_address: "{{ __root_private_network }}.12"
+
+
+- name: Create a container for Nginx, based on custom image created above
+  docker_container:
+    name: c_nginx
+    image: i_custom_ubuntu
+    ports: "80:80"
+    detach: yes
+    interactive: yes
+    tty: yes
+    recreate: no
+    purge_networks: yes
+    networks:
+      - name: private_network
+        ipv4_address: "{{ __root_private_network }}.14"
+
+
+
